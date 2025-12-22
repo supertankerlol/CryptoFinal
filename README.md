@@ -1,5 +1,7 @@
 Guide how to start App
+
 pip install -r requirements.txt
+
 python gui_app.py
 
 Project Overview:
