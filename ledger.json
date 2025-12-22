@@ -38,5 +38,21 @@
         "previous_hash": "0073b35e814ccbf53fa3268160c49250a60039760595489b447e5c4f74658b1a",
         "nonce": 85,
         "hash": "00f84ea4852f2adf274c85220703be5668c402b520754709baf4f8f570383d75"
+    },
+    {
+        "index": 3,
+        "timestamp": 1766418299.0399597,
+        "transactions": [
+            {
+                "type": "LOGIN",
+                "user": "Max",
+                "timestamp": 1766418294.787794,
+                "details": "Success"
+            }
+        ],
+        "merkle_root": "e5b75c6c4786e0d35a87badd2f652ce58d5f2ecec49e8ae050d5d9d95e7ebc33",
+        "previous_hash": "00f84ea4852f2adf274c85220703be5668c402b520754709baf4f8f570383d75",
+        "nonce": 282,
+        "hash": "008666d5f7c2b789430ba2f357e13bc2f38d98c33b2bb813aa97ad6f5d94a027"
     }
 ]

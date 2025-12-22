@@ -40,3 +40,32 @@ class MessagingModule:
             'nonce': nonce.hex(),
             'ciphertext': ciphertext.hex()
         }
+    # ... (код encrypt_message выше)
+
+    def decrypt_message(self, sender_pub_bytes: bytes, encrypted_data: dict) -> str:
+        """
+        расшифровка сообщения от Нас.
+        """
+        # 1. Восстанавливаем публичный ключ отправителя (нашей)
+        sender_pub = serialization.load_pem_public_key(sender_pub_bytes)
+
+        # 2. Магия ECDH: Мой Приватный + Чужой Публичный = Тот же Общий Секрет
+        shared_key = self.private_key.exchange(ec.ECDH(), sender_pub)
+
+        # 3. Деривация того же ключа шифрования
+        derived_key = HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=None,
+            info=b'handshake data',
+        ).derive(shared_key)
+
+        # 4. Расшифровка AES-GCM
+        aesgcm = AESGCM(derived_key)
+
+        # Превращаем HEX обратно в байты
+        nonce = bytes.fromhex(encrypted_data['nonce'])
+        ciphertext = bytes.fromhex(encrypted_data['ciphertext'])
+
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        return plaintext.decode('utf-8')

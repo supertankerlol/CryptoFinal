@@ -195,16 +195,43 @@ class CryptoVaultApp:
         msg_text = self.entry_msg.get()
         if not msg_text: return
 
-        bob_pub = self.bob_messenger.get_public_bytes()
-        encrypted = self.messenger.encrypt_message(bob_pub, msg_text)
+        # 1. Подготовка ключей
+        bob_pub = self.bob_messenger.get_public_bytes() # Ключ получателя
+        my_pub = self.messenger.get_public_bytes()      # Мой ключ (нужен Бобу для расшифровки)
 
-        self.txt_chat_log.insert(tk.END, f"\n[Me] -> [Bob]: {msg_text}\n")
-        self.txt_chat_log.insert(tk.END, f"   [Nonce]: {encrypted['nonce']}\n")
-        self.txt_chat_log.insert(tk.END, f"   [Wire]: {encrypted['ciphertext'][:50]}...\n", "enc")
+        # 2. Алиса шифрует (для Боба)
+        encrypted_pkg = self.messenger.encrypt_message(bob_pub, msg_text)
+
+        # --- ВИЗУАЛИЗАЦИЯ ДЛЯ ВАС ---
+        self.txt_chat_log.insert(tk.END, f"\n------------------------------------------------\n")
+        self.txt_chat_log.insert(tk.END, f"[Me]: {msg_text}\n", "me")
+        self.txt_chat_log.tag_config("me", foreground="blue", font=("Arial", 10, "bold"))
+
+        self.txt_chat_log.insert(tk.END, f"  Checking integrity...\n")
+        self.txt_chat_log.insert(tk.END, f"  [NETWORK] Transmitting encrypted bytes:\n")
+        self.txt_chat_log.insert(tk.END, f"  {encrypted_pkg['ciphertext'][:40]}...\n", "enc")
         self.txt_chat_log.tag_config("enc", foreground="red")
 
+        # 3. Эмуляция сети: Передаем данные Бобу
+        # В реальной жизни это ушло бы через socket.send()
+        try:
+            # Боб получает: (Мой публичный ключ + Зашифрованный пакет)
+            decrypted_text = self.bob_messenger.decrypt_message(my_pub, encrypted_pkg)
+
+            # 4. Боб прочитал успешно
+            self.txt_chat_log.insert(tk.END, f"\n[Bob] (System Auto-Reply):\n")
+            self.txt_chat_log.insert(tk.END, f"  Message received and decrypted successfully!\n")
+            self.txt_chat_log.insert(tk.END, f"  Content verified: '{decrypted_text}'\n", "bob")
+            self.txt_chat_log.tag_config("bob", foreground="green")
+
+        except Exception as e:
+            self.txt_chat_log.insert(tk.END, f"\n[ERROR] Bob could not decrypt! Integrity check failed.\n", "err")
+            self.txt_chat_log.tag_config("err", foreground="red", background="yellow")
+
+        # Лог в блокчейн
         self.ledger.log_event("MESSAGE_SENT", self.current_user, "Encrypted Msg to Bob")
         self.entry_msg.delete(0, tk.END)
+        self.txt_chat_log.see(tk.END) # Автопрокрутка вниз
 
     def select_file(self):
         self.selected_file = filedialog.askopenfilename()
