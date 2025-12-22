@@ -1,0 +1,10 @@
+{
+    "Max": {
+        "hash": "$argon2id$v=19$m=65536,t=3,p=4$6FFRmqgWK/CvdcbM9vNGRQ$HULKOe0WJQjbvBwghv9go4Q1f/ocnJN9jGcXhw0EvR4",
+        "totp_secret": "2Q2BITKRLJK7EVTRUHNMNN23MQT23RGF"
+    },
+    "ali": {
+        "hash": "$argon2id$v=19$m=65536,t=3,p=4$HG93/5tre/CPX13hR3UbNA$OnBaAS4BRExfcaSTwr7PqqZs2iU/1jcPflakuyDZt2E",
+        "totp_secret": "LSORDV6ANMXZB3ZUHQJ5JHU6FYY2HMQ2"
+    }
+}
